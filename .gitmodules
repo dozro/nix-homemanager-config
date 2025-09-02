@@ -1,0 +1,3 @@
+[submodule "rofi/catppuccin-rofi"]
+	path = rofi/catppuccin-rofi
+	url = https://github.com/catppuccin/rofi.git
