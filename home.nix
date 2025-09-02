@@ -57,6 +57,7 @@
     rstudio # R lang IDE
 
     # Misc
+    git-credential-keepassxc
     nix-index
     wget
     git
@@ -192,6 +193,17 @@
     };
   xdg.dataFile."dbus-1/services/org.freedesktop.secrets.service".source =
     "/home/yu/.config/systemd/user/keepassxc-secret-service.service";
+    
+  systemd.user.services.ssh-agent = {
+    Service = {
+      Type = "simple";
+      Environment = "SSH_AUTH_SOCK=%t/ssh-agent.socket";
+      ExecStart = "/usr/bin/ssh-agent -D -a $SSH_AUTH_SOCK";
+    };
+    Install = {
+      WantedBy = [ "default.target" ];
+    };
+  };
 
   /*
     systemd.user.services.actual-server = {
@@ -210,6 +222,8 @@
 
   home.sessionVariables = {
     #LIBCLANG_PATH = "/home/yu/.rustup/toolchains/esp/xtensa-esp32-elf-clang/esp-17.0.1_20240419/esp-clang/lib";
+    SSH_AUTH_SOCK = "$XDG_RUNTIME_DIR/ssh-agent.socket";
+
   };
   home.sessionPath = [
     "/home/yu/.cargo/bin"
