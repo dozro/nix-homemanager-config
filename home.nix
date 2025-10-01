@@ -1,10 +1,15 @@
-{ config, pkgs, nixgl, ... }:
+{
+  config,
+  pkgs,
+  nixgl,
+  ...
+}:
 
 {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
-  home.username = "yu";
-  home.homeDirectory = "/home/yu";
+  home.username = "rye";
+  home.homeDirectory = "/home/rye";
 
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
@@ -18,14 +23,17 @@
   nixGL.packages = nixgl.packages;
   nixGL.defaultWrapper = "mesa";
   nixGL.offloadWrapper = "nvidiaPrime";
-  nixGL.installScripts = [ "mesa" "nvidiaPrime" ];
+  nixGL.installScripts = [
+    "mesa"
+    "nvidiaPrime"
+  ];
 
   # The home.packages option allows you to install Nix packages into your
   # environment.
   home.packages = with pkgs; [
     # Fonts
     nerd-fonts.fira-code
-  
+
     # Dev tools
     nixd # Nix
     nil
@@ -128,7 +136,7 @@
 
   #programs.firefox.nativeMessagingHosts.packages = [
   #  pkgs.kdePackages.plasma-browser-integration
-  #q];
+  #];
 
   programs.kitty = {
     # Terminal emulator
@@ -147,7 +155,7 @@
         launch fish
     ";
 
-  programs.fish = { 
+  programs.fish = {
     # Shell
     enable = true;
     interactiveShellInit = "
@@ -161,7 +169,8 @@
     enable = true;
     enableFishIntegration = true;
   };
-  xdg.configFile."starship.toml".source = /home/yu/.config/home-manager/starship/pastel-powerline.toml;
+  xdg.configFile."starship.toml".source =
+    /home/rye/.config/home-manager/starship/pastel-powerline.toml;
 
   programs.hyfetch = {
     # Fetch system info
@@ -191,9 +200,9 @@
         #Name = "org.freedesktop.secrets";
       };
     };
-  xdg.dataFile."dbus-1/services/org.freedesktop.secrets.service".source =
-    "/home/yu/.config/systemd/user/keepassxc-secret-service.service";
-    
+  #xdg.dataFile."dbus-1/services/org.freedesktop.secrets.service".source =
+  #  "/home/yu/.config/systemd/user/keepassxc-secret-service.service";
+
   systemd.user.services.ssh-agent = {
     Service = {
       Type = "simple";
@@ -205,29 +214,36 @@
     };
   };
 
-  /*
-    systemd.user.services.actual-server = {
-      enable = true;
-      #after = "network.target";
-      wantedBy = [ "multi-user.target" ];
-      #description = "Actual server";
-      serviceConfig = {
+  systemd.user.services.actual-server =
+    let
+      binPath = "${pkgs.actual-server}/bin/actual-server";
+    in
+    {
+      Unit = {
+        AssertFileIsExecutable = "${binPath}";
+        After = "network.target";
+      };
+      Service = {
         Type = "simple";
-        ExecStart = ''ACTUAL_DATA_DIR=/home/yu/.config/actual-server/data ${pkgs.actual-server}/bin/actual-server --config /home/yu/.config/actual-server/config.json'';
+        Environment = "ACTUAL_DATA_DIR=/home/rye/.config/actual-server/data";
+        ExecStart = "${binPath} --config /home/rye/.config/actual-server/config.json";
+        Restart = "on-watchdog";
+      };
+      Install = {
+        WantedBy = [ "multi-user.target" ];
       };
     };
-  */
-  xdg.configFile."actual-server/config.json".source = /home/yu/.config/home-manager/actual-server/config.json;
+  xdg.configFile."actual-server/config.json".source =
+    /home/rye/.config/home-manager/actual-server/config.json;
   xdg.configFile."actual-server/data/.mkdir".text = "";
 
   home.sessionVariables = {
     #LIBCLANG_PATH = "/home/yu/.rustup/toolchains/esp/xtensa-esp32-elf-clang/esp-17.0.1_20240419/esp-clang/lib";
     SSH_AUTH_SOCK = "$XDG_RUNTIME_DIR/ssh-agent.socket";
-
   };
   home.sessionPath = [
-    "/home/yu/.cargo/bin"
-    "/home/yu/.rustup/toolchains/esp/xtensa-esp-elf/esp-13.2.0_20230928/xtensa-esp-elf/bin"
+    "/home/rye/.cargo/bin"
+    "/home/rye/.rustup/toolchains/esp/xtensa-esp-elf/esp-13.2.0_20230928/xtensa-esp-elf/bin"
   ];
   /*
     home.activation = {
@@ -272,7 +288,7 @@
   # Make programs avaible to the foreign system
   programs.bash.enable = true;
   targets.genericLinux.enable = true;
-  
+
   fonts.fontconfig.enable = true;
 
   # Let Home Manager install and manage itself.

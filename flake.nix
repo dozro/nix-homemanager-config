@@ -1,5 +1,5 @@
 {
-  description = "Home Manager configuration of yu";
+  description = "Home Manager configuration of rye";
 
   inputs = {
     # Specify the source of Home Manager and Nixpkgs.
@@ -25,7 +25,7 @@
     in
     {
       packages.x86_64-linux.default = fenix.packages.x86_64-linux.minimal.toolchain;
-      homeConfigurations."yu" = home-manager.lib.homeManagerConfiguration {
+      homeConfigurations."rye" = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
         
         #backupFileExtension = "backup";
